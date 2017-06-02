@@ -1,0 +1,10 @@
+* Avocet Code Test
+
+A simple command-line sorting tool.
+
+Should support the following:
+
+- Perform a natural sort of the input and write the result to the output.
+- Read from stdin or a file.
+- Write to stdout or a file.
+- Support optional gzipping of the input and output.
