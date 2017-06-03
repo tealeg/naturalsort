@@ -21,7 +21,15 @@ func (r runePart) LessThan(other part) bool {
 	return false
 }
 
-func (r runePart) Read(p []byte) (n int, err error) {
+func (r runePart) Read(b []byte) (n int, err error) {
+	buffLen := len(b)
+	if buffLen == 0 {
+		return
+	}
+	n = copy(b, string(r))
+	if buffLen > 1 {
+		err = io.EOF
+	}
 	return
 }
 
@@ -48,6 +56,6 @@ func (i intPart) LessThan(other part) bool {
 	return true
 }
 
-func (i intPart) Read(p []byte) (n int, err error) {
-	return i.reader.Read(p)
+func (i intPart) Read(b []byte) (n int, err error) {
+	return i.reader.Read(b)
 }
