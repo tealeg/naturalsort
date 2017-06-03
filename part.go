@@ -14,3 +14,10 @@ func (r runePart) LessThan(other part) bool {
 }
 
 type intPart int
+
+func (r intPart) LessThan(other part) bool {
+	if otherR, ok := other.(intPart); ok {
+		return r < otherR
+	}
+	return false
+}
