@@ -35,6 +35,20 @@ func (suite *NaturalSortTestSuite) TestSortNumeric() {
 	suite.Equal(item0, items[2])
 }
 
+// When both runeParts and intParts are present, natural ordering is achieved.
+func (suite *NaturalSortTestSuite) TestSortMixed() {
+	item0 := item{intPart(700)}
+	item1 := item{runePart('a')}
+	item2 := item{intPart(80)}
+	item3 := item{runePart('b')}
+	items := []item{item0, item1, item2, item3}
+	sort.Sort(ByNaturalOrder(items))
+	suite.Equal(item2, items[0])
+	suite.Equal(item0, items[1])
+	suite.Equal(item1, items[2])
+	suite.Equal(item3, items[3])
+}
+
 func TestNaturalSortTestSuite(t *testing.T) {
 	suite.Run(t, new(NaturalSortTestSuite))
 }
