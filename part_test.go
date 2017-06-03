@@ -13,9 +13,9 @@ type RunePartTestSuite struct {
 
 // LessThan handles rune vs rune comparisons
 func (suite *RunePartTestSuite) TestLessThanRuneVsRune() {
-	part1 := runePart('z')
-	part2 := runePart('x')
-	part3 := runePart('x')
+	part1 := runePart{runeVal: 'z'}
+	part2 := runePart{runeVal: 'x'}
+	part3 := runePart{runeVal: 'x'}
 	suite.False(part1.LessThan(part2))
 	suite.True(part2.LessThan(part1))
 	suite.False(part2.LessThan(part3))
@@ -25,7 +25,7 @@ func (suite *RunePartTestSuite) TestLessThanRuneVsRune() {
 // LessThan handles rune vs int comparisons, ints are always less than runes
 func (suite *RunePartTestSuite) TestLessThanRuneVsInt() {
 	part0 := intPart{intVal: 99}
-	part1 := runePart('a')
+	part1 := runePart{runeVal: 'a'}
 	part2 := intPart{intVal: 99}
 	suite.False(part1.LessThan(part2))
 	suite.True(part0.LessThan(part1))
@@ -33,7 +33,7 @@ func (suite *RunePartTestSuite) TestLessThanRuneVsInt() {
 
 // Calling runePart.Read with a zero length buffer returns a 0 count
 func (suite *RunePartTestSuite) TestReadToZeroLengthBuffer() {
-	part := runePart('a')
+	part := runePart{runeVal: 'a'}
 	buff := make([]byte, 0, 0)
 	count, err := part.Read(buff)
 	suite.Nil(err)
@@ -43,7 +43,7 @@ func (suite *RunePartTestSuite) TestReadToZeroLengthBuffer() {
 
 // Calling runePart.Read with a 1 byte buffer returns a 1 count
 func (suite *RunePartTestSuite) TestReadTo1ByteBuffer() {
-	part := runePart('a')
+	part := runePart{runeVal: 'a'}
 	buff := make([]byte, 1, 1)
 	count, err := part.Read(buff)
 	suite.Nil(err)
@@ -53,7 +53,7 @@ func (suite *RunePartTestSuite) TestReadTo1ByteBuffer() {
 
 // Calling runePart.Read with a multi byte buffer returns a 1 count, and an io.EOF error
 func (suite *RunePartTestSuite) TestReadToMultiByteBuffer() {
-	part := runePart('a')
+	part := runePart{runeVal: 'a'}
 	buff := make([]byte, 2, 2)
 	count, err := part.Read(buff)
 	suite.NotNil(err)
@@ -101,9 +101,9 @@ func (suite *IntPartTestSuite) TestLessThanIntVsInt() {
 
 // LessThan handles int vs rune comparisons, ints are always less than runes
 func (suite *IntPartTestSuite) TestLessThanIntVsRune() {
-	part0 := runePart('a')
+	part0 := runePart{runeVal: 'a'}
 	part1 := intPart{intVal: 99}
-	part2 := runePart('a')
+	part2 := runePart{runeVal: 'a'}
 	suite.True(part1.LessThan(part2))
 	suite.False(part0.LessThan(part1))
 }

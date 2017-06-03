@@ -11,11 +11,14 @@ type part interface {
 	LessThan(other part) bool
 }
 
-type runePart rune
+type runePart struct {
+	runeVal rune
+	read    bool
+}
 
 func (r runePart) LessThan(other part) bool {
 	if otherR, ok := other.(runePart); ok {
-		return r < otherR
+		return r.runeVal < otherR.runeVal
 	}
 	// The other part must be an intPart, which will always come first
 	return false
@@ -26,7 +29,12 @@ func (r runePart) Read(b []byte) (n int, err error) {
 	if buffLen == 0 {
 		return
 	}
-	n = copy(b, string(r))
+	if r.read {
+		err = io.EOF
+		return
+	}
+	n = copy(b, string(r.runeVal))
+	r.read = true
 	if buffLen > 1 {
 		err = io.EOF
 	}

@@ -11,19 +11,20 @@ type item struct {
 
 // Implement io.Reader for item
 func (i *item) Read(p []byte) (n int, err error) {
-
-	if len(p) == 0 {
-		return 0, io.EOF
+	count := 0
+	index := 0
+	buffLen := len(p)
+	for _, part := range i.parts {
+		if index >= buffLen {
+			return
+		}
+		count, err = part.Read(p[index:])
+		if err != nil && err != io.EOF {
+			return
+		}
+		n += count
+		index += count
 	}
 	return
-	// r.prevRune = -1
-	// n = copy(b, r.s[r.i:])
-	// r.i += int64(n)
-	// return
-	// if len(p) == 0 {
-	// 	n = 0
-	// 	err = fmt.Errorf("Cannot read item into zero length buffer.")
-	// 	return
-	// }
-	// p[
+
 }
