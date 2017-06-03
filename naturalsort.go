@@ -1,7 +1,5 @@
 package main
 
-type item []part
-
 // ByNaturalOrder implements the sort.Interface for []item.
 type ByNaturalOrder []item
 
@@ -16,11 +14,11 @@ func (items ByNaturalOrder) Swap(i, j int) {
 func (items ByNaturalOrder) Less(i, j int) bool {
 	itemA := items[i]
 	itemB := items[j]
-	lenA := len(itemA)
-	lenB := len(itemB)
+	lenA := len(itemA.parts)
+	lenB := len(itemB.parts)
 	for index := 0; index < lenA && index < lenB; index++ {
-		partA := itemA[index]
-		partB := itemB[index]
+		partA := itemA.parts[index]
+		partB := itemB.parts[index]
 		if partA.LessThan(partB) {
 			return true
 		}

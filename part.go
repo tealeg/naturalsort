@@ -1,6 +1,13 @@
 package main
 
+import (
+	"io"
+	"strconv"
+	"strings"
+)
+
 type part interface {
+	io.Reader
 	LessThan(other part) bool
 }
 
@@ -14,12 +21,33 @@ func (r runePart) LessThan(other part) bool {
 	return false
 }
 
-type intPart int
+func (r runePart) Read(p []byte) (n int, err error) {
+	return
+}
 
-func (r intPart) LessThan(other part) bool {
-	if otherR, ok := other.(intPart); ok {
-		return r < otherR
+type intPart struct {
+	intVal int
+	strVal string
+	reader *strings.Reader
+}
+
+func newIntPartFromString(s string) (i intPart, err error) {
+	i = intPart{strVal: s}
+	i.intVal, err = strconv.Atoi(s)
+	if err == nil {
+		i.reader = strings.NewReader(i.strVal)
+	}
+	return
+}
+
+func (i intPart) LessThan(other part) bool {
+	if otherI, ok := other.(intPart); ok {
+		return i.intVal < otherI.intVal
 	}
 	// The other part must be a runePart, which will always come second
 	return true
+}
+
+func (i intPart) Read(p []byte) (n int, err error) {
+	return i.reader.Read(p)
 }
