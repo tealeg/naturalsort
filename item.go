@@ -2,6 +2,7 @@ package main
 
 import "io"
 
+// Convenience type
 type partList []part
 
 type item struct {
