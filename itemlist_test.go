@@ -85,6 +85,38 @@ func (suite *ItemListTestSuite) TestMultipleWrites() {
 	suite.Equal("ab", string(buff))
 }
 
+// Closing the itemList causes the last unterminated item to be pushed to the itemList
+func (suite *ItemListTestSuite) TestCloseFlushesNextItem() {
+	il := itemList{}
+	input := []byte{'a', 'b'}
+
+	count, err := il.Write(input)
+	suite.Nil(err)
+	suite.Equal(2, count)
+	suite.Equal(0, len(il.items))
+
+	err = il.Close()
+	suite.Nil(err)
+
+	suite.Equal(1, len(il.items))
+
+	// Check the value of the item pushed to the list
+	buff := make([]byte, 2, 2)
+
+	count, err = il.items[0].Read(buff)
+	suite.Nil(err)
+	suite.Equal(2, count)
+	suite.Equal("ab", string(buff))
+}
+
+// Closing the itemList with no outstanding unterminated items doesn't add an empty item to the itemList
+func (suite *ItemListTestSuite) TestCloseWithoutUnterminatedItemsIsANoOp() {
+	il := itemList{}
+	err := il.Close()
+	suite.Nil(err)
+	suite.Equal(0, len(il.items))
+}
+
 func TestItemListTestSuite(t *testing.T) {
 	suite.Run(t, new(ItemListTestSuite))
 }
