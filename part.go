@@ -30,6 +30,7 @@ func (r runePart) String() string {
 }
 
 func (r runePart) Read(b []byte) (n int, err error) {
+
 	buffLen := len(b)
 	if buffLen == 0 {
 		return
@@ -38,7 +39,8 @@ func (r runePart) Read(b []byte) (n int, err error) {
 		err = io.EOF
 		return
 	}
-	n = copy(b, string(r.runeVal))
+	b[0] = byte(r.runeVal)
+	n = 1
 	r.read = true
 	if buffLen > 1 {
 		err = io.EOF

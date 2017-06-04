@@ -16,21 +16,27 @@ type item struct {
 // Implement io.Reader for item
 func (i *item) Read(b []byte) (n int, err error) {
 	count := 0
-	index := 0
 	buffLen := len(b)
-	for _, part := range i.parts[i.index:] {
-		if index >= buffLen {
-			return
+	for {
+		if n >= buffLen {
+			break
 		}
-		count, err = part.Read(b[index:])
-		if err != nil && err != io.EOF {
-			i.index += n
-			return
-		}
+		part := i.parts[i.index]
+		count, err = part.Read(b[n:])
 		n += count
-		index += count
+		if err == io.EOF {
+			i.index++
+			if i.index < len(i.parts) {
+				err = nil
+				continue
+			}
+			break
+			// if there are no more parts, we'll exit just below with an EOF.
+		}
+		if err != nil {
+			break
+		}
 	}
-	i.index += n
 	return
 }
 

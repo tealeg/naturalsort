@@ -36,8 +36,9 @@ func (suite *ItemListTestSuite) TestWriteTerminatedInput() {
 	suite.Equal(2, len(il.items))
 
 	// Check the content of the items
-	suite.Equal("ab", il.items[0].String())
-	suite.Equal("cd", il.items[1].String())
+	suite.Equal("ab\n", il.items[0].String())
+	suite.Equal("cd\n", il.items[1].String())
+	// nextItem is not terminated and therefore has no newline
 	suite.Equal("ef", il.nextItem.String())
 }
 
@@ -60,7 +61,7 @@ func (suite *ItemListTestSuite) TestMultipleWrites() {
 	suite.Equal(1, len(il.items))
 
 	// Check the value of the item pushed to the list
-	suite.Equal("ab", il.items[0].String())
+	suite.Equal("ab\n", il.items[0].String())
 }
 
 // Numeric input is bunched into intParts
@@ -74,11 +75,14 @@ func (suite *ItemListTestSuite) TestNumericInputIsGrouped() {
 	suite.Nil(err)
 	suite.Equal(1, len(il.items))
 	item := il.items[0]
-	suite.Equal(3, len(item.parts))
+	// There are four parts because Close() adds a separator (newline)
+	suite.Equal(4, len(item.parts))
+	suite.Equal("a012b\n", item.String())
 
 }
 
-// Closing the itemList causes the last unterminated item to be pushed to the itemList
+// Closing the itemList causes the last unterminated item to be pushed
+// to the itemList (and a separator is added).
 func (suite *ItemListTestSuite) TestCloseFlushesNextItem() {
 	il := itemList{}
 	input := []byte{'a', 'b'}
@@ -94,7 +98,7 @@ func (suite *ItemListTestSuite) TestCloseFlushesNextItem() {
 	suite.Equal(1, len(il.items))
 
 	// Check the value of the item pushed to the list
-	suite.Equal("ab", il.items[0].String())
+	suite.Equal("ab\n", il.items[0].String())
 }
 
 // Closing the itemList with no outstanding unterminated items doesn't add an empty item to the itemList
@@ -113,10 +117,14 @@ func (suite *ItemListTestSuite) TestReadSequentiallyReadsItems() {
 	suite.Nil(err)
 	suite.Equal(20, count)
 	err = il.Close()
-	output := make([]byte, 20, 20)
+	suite.Equal(3, len(il.items))
+	output := make([]byte, 21, 21)
 	count, err = il.Read(output)
 	suite.Nil(err)
-	suite.Equal(20, count)
+	// We have one more character in the output because we've
+	// forced a newline on the end.
+	suite.Equal(21, count)
+	suite.Equal("abc123\nabc234\n123xyz\n", string(output))
 }
 
 func TestItemListTestSuite(t *testing.T) {
