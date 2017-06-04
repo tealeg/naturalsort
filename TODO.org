@@ -1,0 +1,13 @@
+* NaturalSort
+** Items
+*** DONE Made of Parts
+    CLOSED: [2017-06-03 Sa 19:07]
+*** DONE Sorting Algorithm
+    CLOSED: [2017-06-03 Sa 19:07]
+*** TODO Output sorted results
+**** DONE io.Reader Support
+     CLOSED: [2017-06-03 Sa 19:08]
+**** Use io.Copy and wire in StdOut, File and Zip
+** Lex Input to build Items
+** Take input from io.Writer
+** Use io.Copy and wire in StdIn, File and Zip
