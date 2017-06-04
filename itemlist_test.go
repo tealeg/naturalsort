@@ -64,6 +64,13 @@ func (suite *ItemListTestSuite) TestMultipleWrites() {
 	suite.Equal("ab\n", il.items[0].String())
 }
 
+// addIntPart returns internal errors
+func (suite *ItemListTestSuite) TestAddIntPartPassesErrorsThrough() {
+	il := itemList{numBuff: *bytes.NewBufferString("c")}
+	err := il.addIntPart()
+	suite.NotNil(err)
+}
+
 // Numeric input is bunched into intParts
 func (suite *ItemListTestSuite) TestNumericInputIsGrouped() {
 	il := itemList{}

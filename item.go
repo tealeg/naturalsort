@@ -30,7 +30,6 @@ func (i *item) Read(b []byte) (n int, err error) {
 				err = nil
 				continue
 			}
-			break
 			// if there are no more parts, we'll exit just below with an EOF.
 		}
 		if err != nil {

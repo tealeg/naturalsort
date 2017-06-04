@@ -23,12 +23,23 @@ func (suite *ItemTestSuite) TestReadToZeroLengthBuffer() {
 // Attempting to Read more bytes than are present in the item returns an io.EOF
 func (suite *ItemTestSuite) TestReadBeyondLengthOfItemReturnsEOF() {
 	buff := make([]byte, 2, 2)
-	item := item{parts: partList{runePart{runeVal: 'a'}}}
-	count, err := item.Read(buff)
+	itm := item{parts: partList{runePart{runeVal: 'a'}}}
+	count, err := itm.Read(buff)
 	suite.Equal(1, count)
 	suite.NotNil(err)
 	suite.Equal(io.EOF, err)
 	suite.Equal('a', rune(buff[0]))
+}
+
+// Partial read of numeric sequence is valid
+func (suite *ItemTestSuite) TestPartialRead() {
+	buff := make([]byte, 1, 1)
+	part, _ := newIntPartFromString("012")
+	itm := item{parts: partList{part}}
+	count, err := itm.Read(buff)
+	suite.Nil(err)
+	suite.Equal(1, count)
+	suite.Equal('0', rune(buff[0]))
 }
 
 // Read will read all of the items parts in order
