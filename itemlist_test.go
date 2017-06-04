@@ -1,6 +1,7 @@
 package main
 
 import (
+	"bytes"
 	"testing"
 
 	"github.com/stretchr/testify/suite"
@@ -102,6 +103,20 @@ func (suite *ItemListTestSuite) TestCloseWithoutUnterminatedItemsIsANoOp() {
 	err := il.Close()
 	suite.Nil(err)
 	suite.Equal(0, len(il.items))
+}
+
+// Reading the itemList to exhaustion causes all it's items to be read, sequentially.
+func (suite *ItemListTestSuite) TestReadSequentiallyReadsItems() {
+	input := bytes.NewBufferString("abc123 abc234 123xyz")
+	il := itemList{}
+	count, err := il.Write(input.Bytes())
+	suite.Nil(err)
+	suite.Equal(20, count)
+	err = il.Close()
+	output := make([]byte, 20, 20)
+	count, err = il.Read(output)
+	suite.Nil(err)
+	suite.Equal(20, count)
 }
 
 func TestItemListTestSuite(t *testing.T) {

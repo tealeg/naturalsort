@@ -14,21 +14,23 @@ type item struct {
 }
 
 // Implement io.Reader for item
-func (i *item) Read(p []byte) (n int, err error) {
+func (i *item) Read(b []byte) (n int, err error) {
 	count := 0
 	index := 0
-	buffLen := len(p)
-	for _, part := range i.parts {
+	buffLen := len(b)
+	for _, part := range i.parts[i.index:] {
 		if index >= buffLen {
 			return
 		}
-		count, err = part.Read(p[index:])
+		count, err = part.Read(b[index:])
 		if err != nil && err != io.EOF {
+			i.index += n
 			return
 		}
 		n += count
 		index += count
 	}
+	i.index += n
 	return
 }
 
