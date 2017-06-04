@@ -1,6 +1,9 @@
 package main
 
-import "io"
+import (
+	"io"
+	"strings"
+)
 
 // Convenience type
 type partList []part
@@ -27,5 +30,13 @@ func (i *item) Read(p []byte) (n int, err error) {
 		index += count
 	}
 	return
+}
+
+func (i *item) String() string {
+	s := []string{}
+	for _, part := range i.parts {
+		s = append(s, part.String())
+	}
+	return strings.Join(s, "")
 
 }

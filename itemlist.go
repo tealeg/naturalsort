@@ -42,6 +42,7 @@ func (il *itemList) Write(b []byte) (n int, err error) {
 // Implementation of io.Closer for itemList
 func (il *itemList) Close() error {
 	if len(il.nextItem.parts) > 0 {
+		// Flush any outstanding input to the items array
 		il.items = append(il.items, il.nextItem)
 	}
 	return nil

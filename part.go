@@ -9,6 +9,7 @@ import (
 type part interface {
 	io.Reader
 	LessThan(other part) bool
+	String() string
 }
 
 type runePart struct {
@@ -22,6 +23,10 @@ func (r runePart) LessThan(other part) bool {
 	}
 	// The other part must be an intPart, which will always come first
 	return false
+}
+
+func (r runePart) String() string {
+	return string(r.runeVal)
 }
 
 func (r runePart) Read(b []byte) (n int, err error) {
@@ -54,6 +59,13 @@ func newIntPartFromString(s string) (i intPart, err error) {
 		i.reader = strings.NewReader(i.strVal)
 	}
 	return
+}
+
+func (i intPart) String() string {
+	if len(i.strVal) == 0 {
+		return strconv.Itoa(i.intVal)
+	}
+	return i.strVal
 }
 
 func (i intPart) LessThan(other part) bool {

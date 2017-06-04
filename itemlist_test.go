@@ -22,11 +22,7 @@ func (suite *ItemListTestSuite) TestWriteUnterminatedInputToBuffer() {
 	suite.Equal(3, len(il.nextItem.parts))
 
 	// Check that the nextItem contains all the input
-	buff := make([]byte, 3, 3)
-	count, err = il.nextItem.Read(buff)
-	suite.Nil(err)
-	suite.Equal(3, count)
-	suite.Equal("abc", string(buff))
+	suite.Equal("abc", il.nextItem.String())
 }
 
 // Byte slices that include a terminator push new items to the itemList
@@ -39,23 +35,9 @@ func (suite *ItemListTestSuite) TestWriteTerminatedInput() {
 	suite.Equal(2, len(il.items))
 
 	// Check the content of the items
-	buff := make([]byte, 2, 2)
-
-	count, err = il.items[0].Read(buff)
-	suite.Nil(err)
-	suite.Equal(2, count)
-	suite.Equal("ab", string(buff))
-
-	count, err = il.items[1].Read(buff)
-	suite.Nil(err)
-	suite.Equal(2, count)
-	suite.Equal("cd", string(buff))
-
-	// Also check the nextItem
-	count, err = il.nextItem.Read(buff)
-	suite.Nil(err)
-	suite.Equal(2, count)
-	suite.Equal("ef", string(buff))
+	suite.Equal("ab", il.items[0].String())
+	suite.Equal("cd", il.items[1].String())
+	suite.Equal("ef", il.nextItem.String())
 }
 
 // Termination in successive calls to Write causes carried over items
@@ -77,12 +59,22 @@ func (suite *ItemListTestSuite) TestMultipleWrites() {
 	suite.Equal(1, len(il.items))
 
 	// Check the value of the item pushed to the list
-	buff := make([]byte, 2, 2)
+	suite.Equal("ab", il.items[0].String())
+}
 
-	count, err = il.items[0].Read(buff)
+// Numeric input is bunched into intParts
+func (suite *ItemListTestSuite) TestNumericInputIsGrouped() {
+	il := itemList{}
+	input := []byte{'a', '0', '1', '2', 'b'}
+	count, err := il.Write(input)
 	suite.Nil(err)
-	suite.Equal(2, count)
-	suite.Equal("ab", string(buff))
+	suite.Equal(5, count)
+	err = il.Close()
+	suite.Nil(err)
+	suite.Equal(1, len(il.items))
+	item := il.items[0]
+	suite.Equal(3, len(item.parts))
+
 }
 
 // Closing the itemList causes the last unterminated item to be pushed to the itemList
@@ -101,12 +93,7 @@ func (suite *ItemListTestSuite) TestCloseFlushesNextItem() {
 	suite.Equal(1, len(il.items))
 
 	// Check the value of the item pushed to the list
-	buff := make([]byte, 2, 2)
-
-	count, err = il.items[0].Read(buff)
-	suite.Nil(err)
-	suite.Equal(2, count)
-	suite.Equal("ab", string(buff))
+	suite.Equal("ab", il.items[0].String())
 }
 
 // Closing the itemList with no outstanding unterminated items doesn't add an empty item to the itemList
