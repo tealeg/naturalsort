@@ -58,6 +58,33 @@ func (suite *ItemListTestSuite) TestWriteTerminatedInput() {
 	suite.Equal("ef", string(buff))
 }
 
+// Termination in successive calls to Write causes carried over items
+// to be pushed onto the itemList.
+func (suite *ItemListTestSuite) TestMultipleWrites() {
+	il := itemList{}
+	input1 := []byte{'a', 'b'}
+
+	count, err := il.Write(input1)
+	suite.Nil(err)
+	suite.Equal(2, count)
+	suite.Equal(0, len(il.items))
+
+	input2 := []byte{' '}
+
+	count, err = il.Write(input2)
+	suite.Nil(err)
+	suite.Equal(1, count)
+	suite.Equal(1, len(il.items))
+
+	// Check the value of the item pushed to the list
+	buff := make([]byte, 2, 2)
+
+	count, err = il.items[0].Read(buff)
+	suite.Nil(err)
+	suite.Equal(2, count)
+	suite.Equal("ab", string(buff))
+}
+
 func TestItemListTestSuite(t *testing.T) {
 	suite.Run(t, new(ItemListTestSuite))
 }
