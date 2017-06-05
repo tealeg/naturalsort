@@ -3,6 +3,7 @@ package main
 import (
 	"bytes"
 	"io"
+	"sort"
 )
 
 // itemList wraps an array of items and supports the
@@ -109,4 +110,9 @@ func (il *itemList) Read(b []byte) (n int, err error) {
 		}
 	}
 	return
+}
+
+// Sort the itemList.items
+func (il *itemList) Sort() {
+	sort.Sort(ByNaturalOrder(il.items))
 }

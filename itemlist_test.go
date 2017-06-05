@@ -134,6 +134,18 @@ func (suite *ItemListTestSuite) TestReadSequentiallyReadsItems() {
 	suite.Equal("abc123\nabc234\n123xyz\n", string(output))
 }
 
+// Sort sorts the itemList
+func (suite *ItemListTestSuite) TestSort() {
+	input := bytes.NewBufferString("abc123 abc234 123xyz")
+	il := itemList{}
+	il.Write(input.Bytes())
+	il.Close()
+	il.Sort()
+	output := make([]byte, 21, 21)
+	il.Read(output)
+	suite.Equal("123xyz\nabc123\nabc234\n", string(output))
+}
+
 func TestItemListTestSuite(t *testing.T) {
 	suite.Run(t, new(ItemListTestSuite))
 }
