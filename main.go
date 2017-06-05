@@ -3,6 +3,7 @@ package main
 import (
 	"compress/gzip"
 	"flag"
+	"fmt"
 	"io"
 	"log"
 	"os"
@@ -59,8 +60,16 @@ func getInput(inputType, path string) (reader io.ReadCloser, err error) {
 	case "stdin":
 		reader = os.Stdin
 	case "file":
+		if path == "" {
+			err = fmt.Errorf("When input type is 'file', a path must be provided.")
+			return
+		}
 		reader, err = os.Open(path)
 	case "gzip":
+		if path == "" {
+			err = fmt.Errorf("When input type is 'gzip', a path must be provided.")
+			return
+		}
 		var freader io.Reader
 		freader, err = os.Open(path)
 		if err == nil {
@@ -77,8 +86,16 @@ func getOutput(outputType, path string) (writer io.WriteCloser, err error) {
 	case "stdout":
 		writer = os.Stdout
 	case "file":
+		if path == "" {
+			err = fmt.Errorf("When output type is 'file', a path must be provided.")
+			return
+		}
 		writer, err = os.Create(path)
 	case "gzip":
+		if path == "" {
+			err = fmt.Errorf("When output type is 'gzip', a path must be provided.")
+			return
+		}
 		var fwrite io.Writer
 		fwrite, err = os.Create(path)
 		if err == nil {

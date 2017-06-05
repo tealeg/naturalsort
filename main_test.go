@@ -33,6 +33,17 @@ func (suite *MainTestSuite) TestGetInput() {
 	suite.Nil(gzip.Close())
 }
 
+// getInput returns an error if no path is provided for file or gzip input types
+func (suite *MainTestSuite) TestGetInputRequiresPathsForFilesAndGZips() {
+	var err error
+	_, err = getInput("file", "")
+	suite.NotNil(err)
+	suite.Equal("When input type is 'file', a path must be provided.", err.Error())
+	_, err = getInput("gzip", "")
+	suite.NotNil(err)
+	suite.Equal("When input type is 'gzip', a path must be provided.", err.Error())
+}
+
 // getOutput takes an outputType and a path (optionally empty string)
 // and returns an io.Writer implementation.
 func (suite *MainTestSuite) TestGetOutput() {
@@ -51,6 +62,17 @@ func (suite *MainTestSuite) TestGetOutput() {
 	suite.IsType(&gzip.Writer{}, output)
 	gzip, _ := output.(*gzip.Writer)
 	suite.Nil(gzip.Close())
+}
+
+// getOutput returns an error if no path is provided for file or gzip output types
+func (suite *MainTestSuite) TestGetOutputRequiresPathsForFilesAndGZips() {
+	var err error
+	_, err = getOutput("file", "")
+	suite.NotNil(err)
+	suite.Equal("When output type is 'file', a path must be provided.", err.Error())
+	_, err = getOutput("gzip", "")
+	suite.NotNil(err)
+	suite.Equal("When output type is 'gzip', a path must be provided.", err.Error())
 }
 
 // NaturalSort reads from an io.Reader, sorts the input naturally and
