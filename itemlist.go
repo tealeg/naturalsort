@@ -7,7 +7,7 @@ import (
 )
 
 // itemList wraps an array of items and supports the
-// io.ReadWriteCloser interface.
+// io.ReadWriter interface.
 type itemList struct {
 	items     []item
 	nextItem  item
