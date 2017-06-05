@@ -1,0 +1,81 @@
+* NaturalSort
+
+** Introduction
+
+NaturalSort is a command line program for performing a natural sort on
+some given set of input.  All whitespace or control characters and
+considered to be delimiters of items to be sorted.
+
+** Building
+
+To build naturalsort, issue the following command whilst in its root directory:
+
+#+BEGIN_SRC shell
+go build
+#+END_SRC
+
+** Testing
+
+NaturalSort relies on =github.com/stretchr/testify= for its tests, to install this dependency type:
+
+#+BEGIN_SRC shell
+go get -t .
+#+END_SRC
+
+Once =testify= is installed you may run the tests by typing:
+
+#+BEGIN_SRC shell
+go test -v -cover
+#+END_SRC
+
+** Installing
+
+To install naturalsort into your local go/bin directory type:
+
+#+BEGIN_SRC shell
+go install .
+#+END_SRC
+
+
+** Usage:
+
+NaturalSort is invoked by typing =naturalsort=.  
+
+There are four command line flags that may be passed:
+*** =-if= string
+    	A path to a file to read input from when input_type is either file or gzip.
+*** =-it= string
+    	The type of input to read: (stdin | file | gzip) (default "stdin")
+*** =-of= string
+    	A path to a file to write output to when output_type is either file or gzip.
+*** =-ot= string
+    	The type of output to write: (stdout | file | gzip) (default "stdout")
+
+** Examples:
+
+*** Sort input from stdin:
+
+#+BEGIN_SRC shell
+cat data | naturalsort
+#+END_SRC
+
+*** Sort input from file
+#+BEGIN_SRC shell
+naturalsort -it file -if ./data
+#+END_SRC
+
+*** Sort input from gzipped file
+#+BEGIN_SRC shell
+naturalsort -it gzip -if ./data.gz
+#+END_SRC
+
+*** Sort input and output to a file
+#+BEGIN_SRC shell
+cat data | naturalsort -ot file -of ./sorted
+#+END_SRC
+
+*** Sort input and output to a gzipped file
+#+BEGIN_SRC shell
+cat data | naturalsort -ot gzip -of ./sorted.gz
+#+END_SRC
+ 
