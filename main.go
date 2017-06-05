@@ -9,6 +9,15 @@ import (
 	"strings"
 )
 
+var inputType string
+var inputFile string
+var outputType string
+var outputFile string
+
+func init() {
+	setupFlags(&inputType, &inputFile, &outputType, &outputFile)
+}
+
 func setupFlags(inputType, inputFile, outputType, outputFile *string) {
 	const (
 		defaultInputType  = "stdin"
@@ -80,23 +89,19 @@ func getOutput(outputType, path string) (writer io.WriteCloser, err error) {
 }
 
 func main() {
-	var inputType string
-	var inputFile string
-	var outputType string
-	var outputFile string
-
-	setupFlags(&inputType, &inputFile, &outputType, &outputFile)
 	flag.Parse()
 	inputReader, err := getInput(inputType, inputFile)
+	if err != nil {
+		log.Fatal(err.Error())
+	}
 	defer inputReader.Close()
-	if err != nil {
-		log.Fatal(err.Error())
-	}
+
 	outputWriter, err := getOutput(outputType, outputFile)
-	defer outputWriter.Close()
 	if err != nil {
 		log.Fatal(err.Error())
 	}
+	defer outputWriter.Close()
+
 	err = NaturalSort(inputReader, outputWriter)
 	if err != nil {
 		log.Fatal(err.Error())
