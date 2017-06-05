@@ -26,6 +26,20 @@ func (suite *ItemListTestSuite) TestWriteUnterminatedInputToBuffer() {
 	suite.Equal("abc", il.nextItem.String())
 }
 
+func (suite *ItemListTestSuite) TestAddingACorruptIntPartReturnsAnError() {
+	// This triggers the intPart handling on termination
+	il := itemList{}
+	il.numBuff.Write([]byte{'a'})
+	_, err := il.Write([]byte{' '})
+	suite.NotNil(err)
+	// This triggers the intPart handling on a switch from numeric
+	// to char content.
+	il = itemList{}
+	il.numBuff.Write([]byte{'a'})
+	_, err = il.Write([]byte{'a'})
+	suite.NotNil(err)
+}
+
 // Byte slices that include a terminator push new items to the itemList
 func (suite *ItemListTestSuite) TestWriteTerminatedInput() {
 	il := itemList{}
@@ -106,6 +120,15 @@ func (suite *ItemListTestSuite) TestFlushFlushesNextItem() {
 
 	// Check the value of the item pushed to the list
 	suite.Equal("ab\n", il.items[0].String())
+}
+
+func (suite *ItemListTestSuite) TestFlushFlushesIntPart() {
+	il := itemList{}
+	il.numBuff.Write([]byte{'9'})
+	err := il.Flush()
+	suite.Nil(err)
+	suite.Equal(1, len(il.items))
+	suite.Equal("9\n", il.items[0].String())
 }
 
 // Closing the itemList with no outstanding unterminated items doesn't add an empty item to the itemList
