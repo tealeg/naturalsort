@@ -15,6 +15,8 @@ type itemList struct {
 	readIndex int
 }
 
+// Pull the string representing a number off the numBuff and convert
+// it to an intPart on itemList.parts
 func (il *itemList) addIntPart() (err error) {
 	if il.numBuff.Len() > 0 {
 		var iPart part
@@ -61,14 +63,16 @@ func (il *itemList) Write(b []byte) (n int, err error) {
 	return
 }
 
-// Implementation of io.Closer for itemList
-func (il *itemList) Close() error {
-	if len(il.nextItem.parts) > 0 {
+// Flush unterminated input to the itemList
+func (il *itemList) Flush() error {
+	if il.numBuff.Len() > 0 {
 		// Flush any outstanding input to the items array
 		err := il.addIntPart()
 		if err != nil {
 			return err
 		}
+	}
+	if len(il.nextItem.parts) > 0 {
 		il.nextItem.parts = append(il.nextItem.parts, runePart{runeVal: '\n'})
 		il.items = append(il.items, il.nextItem)
 	}

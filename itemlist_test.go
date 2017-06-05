@@ -78,11 +78,11 @@ func (suite *ItemListTestSuite) TestNumericInputIsGrouped() {
 	count, err := il.Write(input)
 	suite.Nil(err)
 	suite.Equal(5, count)
-	err = il.Close()
+	err = il.Flush()
 	suite.Nil(err)
 	suite.Equal(1, len(il.items))
 	item := il.items[0]
-	// There are four parts because Close() adds a separator (newline)
+	// There are four parts because Flush() adds a separator (newline)
 	suite.Equal(4, len(item.parts))
 	suite.Equal("a012b\n", item.String())
 
@@ -90,7 +90,7 @@ func (suite *ItemListTestSuite) TestNumericInputIsGrouped() {
 
 // Closing the itemList causes the last unterminated item to be pushed
 // to the itemList (and a separator is added).
-func (suite *ItemListTestSuite) TestCloseFlushesNextItem() {
+func (suite *ItemListTestSuite) TestFlushFlushesNextItem() {
 	il := itemList{}
 	input := []byte{'a', 'b'}
 
@@ -99,7 +99,7 @@ func (suite *ItemListTestSuite) TestCloseFlushesNextItem() {
 	suite.Equal(2, count)
 	suite.Equal(0, len(il.items))
 
-	err = il.Close()
+	err = il.Flush()
 	suite.Nil(err)
 
 	suite.Equal(1, len(il.items))
@@ -109,9 +109,9 @@ func (suite *ItemListTestSuite) TestCloseFlushesNextItem() {
 }
 
 // Closing the itemList with no outstanding unterminated items doesn't add an empty item to the itemList
-func (suite *ItemListTestSuite) TestCloseWithoutUnterminatedItemsIsANoOp() {
+func (suite *ItemListTestSuite) TestFlushWithoutUnterminatedItemsIsANoOp() {
 	il := itemList{}
-	err := il.Close()
+	err := il.Flush()
 	suite.Nil(err)
 	suite.Equal(0, len(il.items))
 }
@@ -123,7 +123,7 @@ func (suite *ItemListTestSuite) TestReadSequentiallyReadsItems() {
 	count, err := il.Write(input.Bytes())
 	suite.Nil(err)
 	suite.Equal(20, count)
-	err = il.Close()
+	err = il.Flush()
 	suite.Equal(3, len(il.items))
 	output := make([]byte, 21, 21)
 	count, err = il.Read(output)
@@ -139,7 +139,7 @@ func (suite *ItemListTestSuite) TestSort() {
 	input := bytes.NewBufferString("abc123 abc234 123xyz")
 	il := itemList{}
 	il.Write(input.Bytes())
-	il.Close()
+	il.Flush()
 	il.Sort()
 	output := make([]byte, 21, 21)
 	il.Read(output)
